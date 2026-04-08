@@ -1,1006 +1,296 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Demo Resort — Snow Phone Dashboard</title>
-  <style>
-    :root {
-      --bg-primary: #1a1d21;
-      --bg-secondary: #23272b;
-      --bg-tertiary: #2c3034;
-      --text-primary: #e8e8e8;
-      --text-secondary: #9a9da1;
-      --border: #3a3f44;
-      --accent-green: #28a745;
-      --accent-green-hover: #218838;
-      --accent-blue: #4a9eff;
-      --accent-red: #dc3545;
-      --row-hover: #2a2e33;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      line-height: 1.4;
-      padding: 1.5rem;
-      font-size: 14px;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 1.25rem;
-      background: var(--bg-secondary);
-      border-radius: 8px;
-      margin-bottom: 1.25rem;
-      border: 1px solid var(--border);
-    }
-
-    .header h1 {
-      font-size: 1.25rem;
-      font-weight: 600;
-    }
-
-    .header .timestamp {
-      color: var(--text-secondary);
-      font-size: 0.8rem;
-      margin-top: 0.2rem;
-    }
-
-    .save-btn {
-      background: var(--accent-green);
-      color: white;
-      border: none;
-      padding: 0.6rem 1.5rem;
-      font-size: 0.9rem;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .save-btn:hover {
-      background: var(--accent-green-hover);
-    }
-
-    .section {
-      background: var(--bg-secondary);
-      border-radius: 8px;
-      margin-bottom: 1.25rem;
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-
-    .section-header {
-      padding: 0.75rem 1rem;
-      background: var(--bg-tertiary);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .section-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .section-body {
-      padding: 1rem;
-    }
-
-    /* Form Elements */
-    .form-row {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .form-row:last-child {
-      margin-bottom: 0;
-    }
-
-    .form-group {
-      flex: 1;
-      min-width: 120px;
-    }
-
-    .form-group.small {
-      flex: 0 0 100px;
-      min-width: 80px;
-    }
-
-    .form-group.full {
-      flex: 1 0 100%;
-    }
-
-    label {
-      display: block;
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.25rem;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 0.5rem;
-      background: var(--bg-tertiary);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      color: var(--text-primary);
-      font-size: 0.85rem;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--accent-blue);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    textarea.large {
-      min-height: 150px;
-    }
-
-    /* Toggle */
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .toggle {
-      position: relative;
-      width: 44px;
-      height: 24px;
-      flex-shrink: 0;
-    }
-
-    .toggle input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .toggle-slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: var(--accent-red);
-      border-radius: 24px;
-      transition: 0.2s;
-    }
-
-    .toggle-slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      border-radius: 50%;
-      transition: 0.2s;
-    }
-
-    .toggle input:checked + .toggle-slider {
-      background-color: var(--accent-green);
-    }
-
-    .toggle input:checked + .toggle-slider:before {
-      transform: translateX(20px);
-    }
-
-    .toggle-label {
-      font-size: 0.85rem;
-      font-weight: 500;
-      min-width: 50px;
-    }
-
-    /* Master Controls */
-    .master-controls {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-      padding: 0.75rem 1rem;
-      background: var(--bg-primary);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .master-controls .toggle-row {
-      font-weight: 600;
-    }
-
-    .hours-input {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .hours-input input {
-      width: 90px;
-    }
-
-    .hours-input span {
-      color: var(--text-secondary);
-      font-size: 0.85rem;
-    }
-
-    /* Item Rows (Lifts/Runs) */
-    .item-list {
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    .item-row {
-      display: flex;
-      align-items: center;
-      padding: 0.5rem 1rem;
-      border-bottom: 1px solid var(--border);
-      gap: 1rem;
-    }
-
-    .item-row:last-child {
-      border-bottom: none;
-    }
-
-    .item-row:hover {
-      background: var(--row-hover);
-    }
-
-    .item-name {
-      width: 160px;
-      font-weight: 500;
-      font-size: 0.85rem;
-      flex-shrink: 0;
-    }
-
-    .item-difficulty {
-      width: 80px;
-      flex-shrink: 0;
-    }
-
-    .difficulty-badge {
-      display: inline-block;
-      padding: 0.15rem 0.5rem;
-      border-radius: 3px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .diff-green { background: #28a745; color: white; }
-    .diff-blue { background: #007bff; color: white; }
-    .diff-black { background: #000; color: white; border: 1px solid #444; }
-    .diff-double { background: #dc3545; color: white; }
-
-    .item-toggle {
-      width: 100px;
-      flex-shrink: 0;
-    }
-
-    .item-toggle .toggle-row {
-      gap: 0.5rem;
-    }
-
-    .item-toggle .toggle {
-      width: 36px;
-      height: 20px;
-    }
-
-    .item-toggle .toggle-slider:before {
-      height: 14px;
-      width: 14px;
-    }
-
-    .item-toggle .toggle input:checked + .toggle-slider:before {
-      transform: translateX(16px);
-    }
-
-    .item-toggle .toggle-label {
-      font-size: 0.75rem;
-      min-width: 40px;
-    }
-
-    .item-advisory {
-      flex: 1;
-      min-width: 150px;
-    }
-
-    .item-advisory input {
-      padding: 0.35rem 0.5rem;
-      font-size: 0.8rem;
-    }
-
-    /* Venue Cards */
-    .venue-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-    }
-
-    .venue-card {
-      background: var(--bg-tertiary);
-      border-radius: 6px;
-      padding: 0.75rem;
-      border: 1px solid var(--border);
-    }
-
-    .venue-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
-    }
-
-    .venue-name {
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .venue-card .form-group {
-      margin-bottom: 0.5rem;
-    }
-
-    /* Placeholder */
-    .placeholder {
-      background: var(--bg-tertiary);
-      border: 1px dashed var(--border);
-      border-radius: 6px;
-      padding: 1.5rem;
-      text-align: center;
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-    }
-
-    @media (max-width: 768px) {
-      body { padding: 0.75rem; }
-      .header { flex-direction: column; gap: 0.75rem; text-align: center; }
-      .item-row { flex-wrap: wrap; }
-      .item-name { width: 100%; }
-      .master-controls { flex-wrap: wrap; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo Resort — Snow Phone Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f1117;color:#e8eaf0;min-height:100vh;padding:16px}
+.app{max-width:1200px;margin:0 auto}
+.header{background:#1a1d27;border:1px solid #2a2d3a;border-radius:10px;padding:14px 18px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.header h1{font-size:16px;font-weight:600;color:#e8eaf0}
+.header p{font-size:11px;color:#666;margin-top:2px}
+.save-btn{background:#2563eb;color:#fff;border:none;border-radius:8px;padding:9px 22px;font-size:13px;font-weight:600;cursor:pointer}
+.save-btn:hover{background:#1d4ed8}
+.section{background:#1a1d27;border:1px solid #2a2d3a;border-radius:10px;margin-bottom:10px;overflow:hidden}
+.section-top{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid #2a2d3a;flex-wrap:wrap;gap:6px}
+.section-title{font-size:14px;font-weight:600;color:#e8eaf0}
+.section-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hgrp{display:flex;align-items:center;gap:5px;font-size:11px;color:#888}
+.hgrp input[type=time]{background:#252836;border:1px solid #2a2d3a;border-radius:5px;padding:3px 7px;color:#e8eaf0;font-size:11px;width:80px}
+.toggle{position:relative;display:inline-block;width:36px;height:20px;cursor:pointer;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#3a3d4a;border-radius:20px;transition:.2s}
+.slider:before{content:"";position:absolute;width:14px;height:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+input:checked+.slider{background:#22c55e}
+input:checked+.slider:before{transform:translateX(16px)}
+.row-item{display:grid;align-items:center;padding:7px 16px;border-bottom:1px solid #1e2130;gap:8px}
+.lift-row{grid-template-columns:180px 70px 155px 40px 52px 1fr 20px}
+.run-row{grid-template-columns:180px 94px 155px 115px 40px 52px 1fr 20px}
+.row-item:last-of-type{border-bottom:none}
+.row-item:hover{background:#1e2130}
+.col-hdr{display:grid;align-items:center;padding:4px 16px;gap:8px;font-size:10px;color:#444;text-transform:uppercase;letter-spacing:.4px}
+.ri-name{background:transparent;border:none;color:#e8eaf0;font-size:13px;font-weight:500;width:100%}
+.ri-name:focus{outline:none;border-bottom:1px solid #2563eb}
+.sm-sel{background:#252836;border:1px solid #2a2d3a;border-radius:5px;padding:3px 6px;color:#e8eaf0;font-size:11px;width:100%}
+.hours-inline{display:flex;align-items:center;gap:4px}
+.hours-inline input[type=time]{background:#252836;border:1px solid #2a2d3a;border-radius:5px;padding:3px 5px;color:#e8eaf0;font-size:11px;width:68px}
+.hours-inline span{color:#444;font-size:11px}
+.st{font-size:11px;font-weight:600;text-align:center}
+.st-o{color:#22c55e}
+.st-c{color:#ef4444}
+.adv{background:transparent;border:none;color:#666;font-size:12px;width:100%}
+.adv:focus{outline:none;color:#e8eaf0}
+.adv::placeholder{color:#2a2d3a}
+.del-btn{background:transparent;border:none;color:#2a2d3a;cursor:pointer;font-size:13px;padding:0;line-height:1;text-align:center}
+.del-btn:hover{color:#ef4444}
+.add-row-btn{display:flex;align-items:center;gap:6px;background:transparent;border:none;padding:8px 16px;color:#555;font-size:12px;cursor:pointer;width:100%;border-top:1px dashed #2a2d3a}
+.add-row-btn:hover{color:#2563eb;background:#1e2130}
+.snow-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px 16px}
+.snow-cell{background:#252836;border-radius:8px;padding:10px;text-align:center}
+.snow-cell input{width:100%;background:transparent;border:none;text-align:center;font-size:22px;font-weight:600;color:#e8eaf0}
+.snow-cell input:focus{outline:none}
+.snow-lbl{font-size:10px;color:#555;margin-top:3px;text-transform:uppercase;letter-spacing:.4px}
+.snow-selects{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 16px 14px}
+.fl{display:flex;flex-direction:column;gap:4px}
+.fl-lbl{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.4px}
+.fl select,.fl input{background:#252836;border:1px solid #2a2d3a;border-radius:6px;padding:5px 9px;color:#e8eaf0;font-size:12px}
+.announce-area{padding:14px 16px}
+.announce-area textarea{width:100%;background:#252836;border:1px solid #2a2d3a;border-radius:8px;padding:10px;color:#e8eaf0;font-size:13px;resize:vertical;min-height:70px;font-family:inherit}
+.forecast-box{padding:12px 16px;color:#666;font-size:12px;display:flex;align-items:center;gap:8px}
+.auto-pill{background:#14532d;color:#86efac;font-size:10px;padding:2px 7px;border-radius:4px;flex-shrink:0;font-weight:600}
+.badge-base{display:inline-block;background:#1e3a5f;color:#60a5fa;font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600}
+.badge-addon{display:inline-block;background:#2a1f3a;color:#a78bfa;font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600}
+.add-section-wrap{border:1px dashed #2a2d3a;border-radius:10px;padding:16px;text-align:center;margin-bottom:10px}
+.add-section-btn{background:#252836;border:1px solid #2a2d3a;border-radius:8px;padding:10px 18px;color:#e8eaf0;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.add-section-btn:hover{border-color:#2563eb;color:#2563eb}
+.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px;max-width:400px;margin-left:auto;margin-right:auto}
+.mod-opt{background:#1a1d27;border:1px solid #2a2d3a;border-radius:7px;padding:9px;cursor:pointer;font-size:12px;color:#aaa;text-align:center}
+.mod-opt:hover{border-color:#2563eb;color:#2563eb}
+.mod-opt.disabled{color:#333;cursor:default}
+.addon-card{background:#252836;border-radius:8px;padding:12px 14px;margin-bottom:8px}
+.addon-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.addon-name{background:transparent;border:none;color:#e8eaf0;font-size:13px;font-weight:500;flex:1}
+.addon-name:focus{outline:none;border-bottom:1px solid #2563eb}
+.addon-fields{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.addon-fields input,.addon-adv input{background:#1a1d27;border:1px solid #2a2d3a;border-radius:5px;padding:5px 8px;color:#e8eaf0;font-size:12px}
+.addon-adv input{width:100%}
+.price-input{width:100px}
+.remove-btn{background:transparent;border:none;color:#444;cursor:pointer;font-size:11px;flex-shrink:0}
+.remove-btn:hover{color:#ef4444}
+.section-pad{padding:12px 16px}
+</style>
 </head>
 <body>
-  <!-- HEADER -->
-  <header class="header">
+<div class="app">
+
+  <div class="header">
     <div>
       <h1>Demo Resort — Snow Phone Dashboard</h1>
-      <div class="timestamp">Last updated: Mar 27, 2026 at 2:00 PM MST</div>
+      <p>Last saved: not yet saved &nbsp;|&nbsp; Snow Phone: <span style="color:#60a5fa">(970) 555-0100</span></p>
     </div>
-    <button class="save-btn">SAVE</button>
-  </header>
+    <button class="save-btn" onclick="handleSave()">Save Changes</button>
+  </div>
+
+  <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px">
+    <span class="badge-base">Base sections</span>
+    <span style="font-size:11px;color:#444">always visible — cannot be removed</span>
+  </div>
 
   <!-- SNOW CONDITIONS -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-title">Snow Conditions</span>
+    <div class="section-top"><span class="section-title">Snow Conditions</span></div>
+    <div class="snow-grid">
+      <div class="snow-cell"><input type="number" placeholder="—"><div class="snow-lbl">24h Snow (in)</div></div>
+      <div class="snow-cell"><input type="number" placeholder="—"><div class="snow-lbl">48h Snow (in)</div></div>
+      <div class="snow-cell"><input type="number" placeholder="—"><div class="snow-lbl">7d Snow (in)</div></div>
+      <div class="snow-cell"><input type="number" placeholder="—"><div class="snow-lbl">Base Depth (in)</div></div>
     </div>
-    <div class="section-body">
-      <div class="form-row">
-        <div class="form-group small">
-          <label>24h Snow</label>
-          <input type="number" value="8">
-        </div>
-        <div class="form-group small">
-          <label>48h Snow</label>
-          <input type="number" value="14">
-        </div>
-        <div class="form-group small">
-          <label>7d Snow</label>
-          <input type="number" value="32">
-        </div>
-        <div class="form-group small">
-          <label>Base Depth</label>
-          <input type="number" value="78">
-        </div>
-        <div class="form-group">
-          <label>Surface</label>
-          <select>
-            <option>Packed Powder</option>
-            <option selected>Powder</option>
-            <option>Groomed</option>
-            <option>Variable</option>
-            <option>Icy</option>
-            <option>Spring Conditions</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Quality</label>
-          <select>
-            <option selected>Dry Powder</option>
-            <option>Wet Heavy</option>
-            <option>Wind Affected</option>
-            <option>Corned</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group full">
-          <label>Special Advisory</label>
-          <input type="text" value="Powder stash available in trees off Lift 4. Wind loading on north-facing slopes.">
-        </div>
-      </div>
+    <div class="snow-selects">
+      <div class="fl"><span class="fl-lbl">Surface</span><select><option>Packed Powder</option><option>Powder</option><option>Groomed</option><option>Variable</option><option>Icy</option><option>Spring Conditions</option></select></div>
+      <div class="fl"><span class="fl-lbl">Quality</span><select><option>Dry Powder</option><option>Wet/Heavy</option><option>Wind Affected</option><option>Corned</option></select></div>
+      <div class="fl"><span class="fl-lbl">Special Advisory</span><input placeholder="Optional..."></div>
     </div>
   </div>
 
   <!-- LIFTS -->
   <div class="section">
-    <div class="section-header">
+    <div class="section-top">
       <span class="section-title">Lifts</span>
-    </div>
-    <div class="master-controls">
-      <div class="toggle-row">
-        <label class="toggle">
-          <input type="checkbox" checked id="lifts-master">
-          <span class="toggle-slider"></span>
-        </label>
-        <span class="toggle-label">All Open</span>
-      </div>
-      <div class="hours-input">
-        <label style="margin:0;">Hours:</label>
-        <input type="time" value="09:00">
-        <span>to</span>
-        <input type="time" value="16:00">
+      <div class="section-controls">
+        <div class="hgrp"><span>First chair</span><input type="time" value="09:00"><span>Last chair</span><input type="time" value="16:00"></div>
+        <label class="toggle"><input type="checkbox" checked onchange="updateStatus(this)"><span class="slider"></span></label>
       </div>
     </div>
-    <div class="item-list">
-      <div class="item-row">
-        <span class="item-name">Summit Express</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-blue">Blue</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" placeholder="Advisory..."></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Powder Bowl</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-black">Black</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" value="Fresh tracks available"></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Beginner Lift</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-green">Green</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" placeholder="Advisory..."></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">North Face</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-double">2x Black</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Closed</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" value="Avalanche control"></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Terrain Park</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-blue">Blue</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" placeholder="Advisory..."></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Backside</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-black">Black</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" placeholder="Advisory..."></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Family Lift</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-green">Green</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" placeholder="Advisory..."></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Gondola</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-blue">Blue</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" placeholder="Advisory..."></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Alpine Chair</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-blue">Blue</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Closed</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" value="Maintenance"></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Magic Carpet</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-green">Green</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" placeholder="Advisory..."></div>
-      </div>
-    </div>
+    <div class="col-hdr lift-row"><span>Name</span><span>Seats</span><span>Hours</span><span></span><span>Status</span><span>Advisory</span><span></span></div>
+    <div id="lifts-list"></div>
+    <button class="add-row-btn" onclick="addLift()">+ Add Lift</button>
   </div>
 
   <!-- RUNS -->
   <div class="section">
-    <div class="section-header">
+    <div class="section-top">
       <span class="section-title">Runs</span>
-    </div>
-    <div class="master-controls">
-      <div class="toggle-row">
-        <label class="toggle">
-          <input type="checkbox" checked id="runs-master">
-          <span class="toggle-slider"></span>
-        </label>
-        <span class="toggle-label">All Open</span>
-      </div>
-      <div class="hours-input">
-        <label style="margin:0;">Hours:</label>
-        <input type="time" value="09:00">
-        <span>to</span>
-        <input type="time" value="16:00">
+      <div class="section-controls">
+        <div class="hgrp"><span>Open</span><input type="time" value="09:00"><span>Close</span><input type="time" value="16:00"></div>
+        <label class="toggle"><input type="checkbox" checked onchange="updateStatus(this)"><span class="slider"></span></label>
       </div>
     </div>
-    <div class="item-list">
-      <div class="item-row">
-        <span class="item-name">Easy Street</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-green">Green</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" value="Groomed"></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Powder Paradise</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-blue">Blue</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" value="Fresh powder"></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Steeps</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-black">Black</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" value="Moguls forming"></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">The Wall</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-double">2x Black</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Closed</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" value="Avy control"></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Cruiser</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-blue">Blue</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" value="Freshly groomed"></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Bunny Hill</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-green">Green</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" placeholder="Advisory..."></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Chute</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-double">2x Black</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" value="Experts only"></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Glades</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-black">Black</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" value="Tree skiing"></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Panorama</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-blue">Blue</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" placeholder="Advisory..."></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Terrain Park</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-blue">Blue</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" value="Medium features"></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Backside Bowl</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-black">Black</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" placeholder="Advisory..."></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Family Fun</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-green">Green</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" placeholder="Advisory..."></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Ridge Run</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-blue">Blue</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" placeholder="Advisory..."></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Cliff Drop</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-double">2x Black</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Closed</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" value="Rope drop 11am"></div>
-      </div>
-      <div class="item-row">
-        <span class="item-name">Sunset Strip</span>
-        <span class="item-difficulty"><span class="difficulty-badge diff-blue">Blue</span></span>
-        <div class="item-toggle">
-          <div class="toggle-row">
-            <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            <span class="toggle-label">Open</span>
-          </div>
-        </div>
-        <div class="item-advisory"><input type="text" value="Night skiing til 9pm"></div>
-      </div>
-    </div>
+    <div class="col-hdr run-row"><span>Name</span><span>Difficulty</span><span>Hours</span><span>Access By</span><span></span><span>Status</span><span>Advisory</span><span></span></div>
+    <div id="runs-list"></div>
+    <button class="add-row-btn" onclick="addRun()">+ Add Run</button>
   </div>
 
-  <!-- PARKING -->
+  <!-- ANNOUNCEMENTS -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-title">Parking</span>
-    </div>
-    <div class="section-body">
-      <div class="venue-grid">
-        <div class="venue-card">
-          <div class="venue-header">
-            <span class="venue-name">Main Lot</span>
-            <div class="toggle-row">
-              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Hours</label>
-              <div class="hours-input"><input type="time" value="06:00"><span>-</span><input type="time" value="18:00"></div>
-            </div>
-            <div class="form-group small">
-              <label>Price</label>
-              <input type="text" value="$25">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Advisory</label>
-            <input type="text" value="Free on weekdays">
-          </div>
-        </div>
-        <div class="venue-card">
-          <div class="venue-header">
-            <span class="venue-name">Upper Lot</span>
-            <div class="toggle-row">
-              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Hours</label>
-              <div class="hours-input"><input type="time" value="07:00"><span>-</span><input type="time" value="17:00"></div>
-            </div>
-            <div class="form-group small">
-              <label>Price</label>
-              <input type="text" value="$15">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Advisory</label>
-            <input type="text" value="Shuttle every 10 min">
-          </div>
-        </div>
-        <div class="venue-card">
-          <div class="venue-header">
-            <span class="venue-name">Overflow Lot</span>
-            <div class="toggle-row">
-              <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Hours</label>
-              <div class="hours-input"><input type="time" value="08:00"><span>-</span><input type="time" value="16:00"></div>
-            </div>
-            <div class="form-group small">
-              <label>Price</label>
-              <input type="text" value="Free">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Advisory</label>
-            <input type="text" value="Opens when Main is full">
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SKI SCHOOL -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Ski School</span>
-    </div>
-    <div class="section-body">
-      <div class="form-row">
-        <div class="toggle-row">
-          <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-          <span class="toggle-label">Open</span>
-        </div>
-        <div class="hours-input">
-          <label style="margin:0;">Hours:</label>
-          <input type="time" value="09:00">
-          <span>to</span>
-          <input type="time" value="15:00">
-        </div>
-      </div>
-      <div class="form-group full" style="margin-top:0.75rem;">
-        <label>Advisory</label>
-        <input type="text" value="Group lessons at 10am and 1pm. Private lessons available — book online.">
-      </div>
-    </div>
-  </div>
-
-  <!-- FOOD & BEVERAGE -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Food & Beverage</span>
-    </div>
-    <div class="section-body">
-      <div class="venue-grid">
-        <div class="venue-card">
-          <div class="venue-header">
-            <span class="venue-name">Summit Lodge</span>
-            <div class="toggle-row">
-              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Hours</label>
-            <div class="hours-input"><input type="time" value="08:00"><span>-</span><input type="time" value="16:00"></div>
-          </div>
-          <div class="form-group">
-            <label>Advisory</label>
-            <input type="text" value="Hot soup special">
-          </div>
-        </div>
-        <div class="venue-card">
-          <div class="venue-header">
-            <span class="venue-name">Mid-Mountain Café</span>
-            <div class="toggle-row">
-              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Hours</label>
-            <div class="hours-input"><input type="time" value="10:00"><span>-</span><input type="time" value="15:00"></div>
-          </div>
-          <div class="form-group">
-            <label>Advisory</label>
-            <input type="text" placeholder="Advisory...">
-          </div>
-        </div>
-        <div class="venue-card">
-          <div class="venue-header">
-            <span class="venue-name">Base Lodge Grill</span>
-            <div class="toggle-row">
-              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Hours</label>
-            <div class="hours-input"><input type="time" value="07:00"><span>-</span><input type="time" value="20:00"></div>
-          </div>
-          <div class="form-group">
-            <label>Advisory</label>
-            <input type="text" value="Breakfast til 11am">
-          </div>
-        </div>
-        <div class="venue-card">
-          <div class="venue-header">
-            <span class="venue-name">The Overlook Bar</span>
-            <div class="toggle-row">
-              <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Hours</label>
-            <div class="hours-input"><input type="time" value="11:00"><span>-</span><input type="time" value="21:00"></div>
-          </div>
-          <div class="form-group">
-            <label>Advisory</label>
-            <input type="text" value="Live music Fridays">
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="section-top"><span class="section-title">General Announcements</span></div>
+    <div class="announce-area"><textarea placeholder="Season closing dates, special events, promotions, important notices...">Free parking this weekend! Season closing April 20 — make the most of these last powder days.</textarea></div>
   </div>
 
   <!-- FORECAST -->
   <div class="section">
-    <div class="section-header">
-      <span class="section-title">Forecast</span>
+    <div class="section-top"><span class="section-title">Forecast</span><span class="auto-pill">Auto-pulled</span></div>
+    <div class="forecast-box">Automatically pulled from NWS (US resorts) or Open-Meteo (international). No manual input needed — guests can ask the Snow Phone for forecast info anytime.</div>
+  </div>
+
+  <div style="margin:16px 0 8px;display:flex;align-items:center;gap:8px">
+    <span class="badge-addon">Add-on modules</span>
+    <span style="font-size:11px;color:#444">add only what your resort needs</span>
+  </div>
+
+  <!-- PARKING -->
+  <div class="section" id="parking-section">
+    <div class="section-top">
+      <span class="section-title">Parking</span>
+      <button class="remove-btn" onclick="document.getElementById('parking-section').remove()">Remove section</button>
     </div>
-    <div class="section-body">
-      <div class="placeholder">
-        Auto-pulled from NWS or resort's existing forecast source — no manual input needed.
+    <div class="section-pad">
+      <div class="addon-card">
+        <div class="addon-top"><input class="addon-name" value="Main Lot"><label class="toggle"><input type="checkbox" checked onchange="updateStatus(this)"><span class="slider"></span></label><span class="st st-o">Open</span></div>
+        <div class="addon-fields"><div class="hgrp" style="gap:4px"><input type="time" value="07:00"><span>–</span><input type="time" value="18:00"></div><input class="price-input" placeholder="Price ($25 / Free)"></div>
+        <div class="addon-adv"><input placeholder="Advisory / shuttle info..."></div>
+      </div>
+      <div class="addon-card">
+        <div class="addon-top"><input class="addon-name" value="Upper Lot"><label class="toggle"><input type="checkbox" checked onchange="updateStatus(this)"><span class="slider"></span></label><span class="st st-o">Open</span></div>
+        <div class="addon-fields"><div class="hgrp" style="gap:4px"><input type="time" value="07:00"><span>–</span><input type="time" value="18:00"></div><input class="price-input" value="Free"></div>
+        <div class="addon-adv"><input value="Shuttle every 15 min to base area"></div>
+      </div>
+      <button class="add-row-btn" style="margin-top:4px">+ Add Parking Lot</button>
+    </div>
+  </div>
+
+  <!-- ADD SECTION -->
+  <div class="add-section-wrap">
+    <button class="add-section-btn" onclick="togglePicker()">+ Add Section</button>
+    <div id="mod-picker" style="display:none;margin-top:12px">
+      <div class="module-grid">
+        <div class="mod-opt" onclick="addMod('shop')">Shop</div>
+        <div class="mod-opt" onclick="addMod('ski')">Ski School</div>
+        <div class="mod-opt" onclick="addMod('fb')">Food & Beverage</div>
+        <div class="mod-opt" onclick="addMod('guest')">Guest Services</div>
+        <div class="mod-opt" onclick="addMod('webcam')">Webcams</div>
+        <div class="mod-opt disabled">More coming</div>
       </div>
     </div>
   </div>
+  <div id="added-mods"></div>
+</div>
 
-  <!-- GENERAL ANNOUNCEMENTS -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">General Announcements</span>
-    </div>
-    <div class="section-body">
-      <textarea class="large" placeholder="Free parking this weekend. Season closing April 15.">Free parking this weekend! 🎉
+<script>
+var LIFTS_DATA = [
+  {name:'Summit Express',seats:6,t1:'08:30',t2:'16:00',open:true,adv:''},
+  {name:'Powder Bowl',seats:4,t1:'09:00',t2:'15:30',open:true,adv:'Fresh tracks available'},
+  {name:'Beginner Lift',seats:2,t1:'09:00',t2:'15:00',open:false,adv:'Maintenance'},
+  {name:'North Face',seats:4,t1:'09:30',t2:'15:00',open:true,adv:''},
+  {name:'Gondola',seats:8,t1:'08:30',t2:'16:00',open:true,adv:''},
+  {name:'Alpine Chair',seats:4,t1:'09:00',t2:'15:00',open:false,adv:'Maintenance'},
+  {name:'Magic Carpet',seats:2,t1:'09:00',t2:'15:00',open:true,adv:''}
+];
+var RUNS_DATA = [
+  {name:'Powder Paradise',diff:'blue',t1:'09:00',t2:'16:00',lift:'Summit Express',open:true,adv:'Fresh powder'},
+  {name:'Steeps',diff:'black',t1:'09:00',t2:'16:00',lift:'Powder Bowl',open:true,adv:'Moguls forming'},
+  {name:'The Wall',diff:'dblack',t1:'09:00',t2:'15:00',lift:'North Face',open:false,adv:'Avalanche control'},
+  {name:'Cruiser',diff:'blue',t1:'09:00',t2:'16:00',lift:'Summit Express',open:true,adv:'Freshly groomed'},
+  {name:'Bunny Hill',diff:'green',t1:'09:00',t2:'15:00',lift:'Beginner Lift',open:true,adv:''},
+  {name:'Chute',diff:'dblack',t1:'09:00',t2:'16:00',lift:'North Face',open:true,adv:'Experts only'},
+  {name:'Glades',diff:'black',t1:'09:00',t2:'16:00',lift:'Summit Express',open:true,adv:'Tree skiing'},
+  {name:'Easy Street',diff:'green',t1:'09:00',t2:'15:00',lift:'Beginner Lift',open:true,adv:''},
+  {name:'Terrain Park',diff:'tp',t1:'09:00',t2:'16:00',lift:'Summit Express',open:true,adv:'Features groomed'}
+];
 
-Season closing April 15 — make the most of these last powder days.
+function seatOpts(v){var o='';for(var i=1;i<=10;i++)o+='<option'+(i==v?' selected':'')+'>'+i+'</option>';return o;}
+function diffOpts(v){var d=[['green','Green'],['blue','Blue'],['black','Black'],['dblack','2x Black'],['tp','Terrain Park']];return d.map(function(x){return'<option value="'+x[0]+'"'+(x[0]==v?' selected':'')+'>'+x[1]+'</option>';}).join('');}
+function liftOpts(v){var names=getLiftNames();return names.map(function(n){return'<option'+(n==v?' selected':'')+'>'+n+'</option>';}).join('');}
+function getLiftNames(){var n=[];document.querySelectorAll('#lifts-list .ri-name').forEach(function(i){if(i.value)n.push(i.value);});return n.length?n:['Summit Express','Powder Bowl','Beginner Lift','North Face','Gondola'];}
 
-Spring Pass sale now live: $399 for unlimited access next season. Buy at Guest Services or online at demoresort.com/springpass</textarea>
-    </div>
-  </div>
+function liftRowHTML(d){
+  return '<div class="row-item lift-row">'
+    +'<input class="ri-name" value="'+d.name+'" placeholder="Lift name">'
+    +'<select class="sm-sel">'+seatOpts(d.seats)+'</select>'
+    +'<div class="hours-inline"><input type="time" value="'+d.t1+'"><span>–</span><input type="time" value="'+d.t2+'"></div>'
+    +'<label class="toggle"><input type="checkbox"'+(d.open?' checked':'')+' onchange="updateStatus(this)"><span class="slider"></span></label>'
+    +'<span class="st '+(d.open?'st-o':'st-c')+'">'+(d.open?'Open':'Closed')+'</span>'
+    +'<input class="adv" placeholder="Advisory..." value="'+d.adv+'">'
+    +'<button class="del-btn" onclick="this.closest(\'.row-item\').remove()" title="Remove">✕</button>'
+    +'</div>';
+}
+function runRowHTML(d){
+  return '<div class="row-item run-row">'
+    +'<input class="ri-name" value="'+d.name+'" placeholder="Run name">'
+    +'<select class="sm-sel">'+diffOpts(d.diff)+'</select>'
+    +'<div class="hours-inline"><input type="time" value="'+d.t1+'"><span>–</span><input type="time" value="'+d.t2+'"></div>'
+    +'<select class="sm-sel">'+liftOpts(d.lift)+'</select>'
+    +'<label class="toggle"><input type="checkbox"'+(d.open?' checked':'')+' onchange="updateStatus(this)"><span class="slider"></span></label>'
+    +'<span class="st '+(d.open?'st-o':'st-c')+'">'+(d.open?'Open':'Closed')+'</span>'
+    +'<input class="adv" placeholder="Advisory..." value="'+d.adv+'">'
+    +'<button class="del-btn" onclick="this.closest(\'.row-item\').remove()" title="Remove">✕</button>'
+    +'</div>';
+}
 
-  <!-- GUEST SERVICES -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Guest Services</span>
-    </div>
-    <div class="section-body">
-      <textarea class="large" placeholder="Lift tickets available online at demoResort.com...">Lift tickets available online at demoresort.com or at the main lodge ticket window.
+function initLists(){
+  var ll=document.getElementById('lifts-list');
+  LIFTS_DATA.forEach(function(d){ll.insertAdjacentHTML('beforeend',liftRowHTML(d));});
+  var rl=document.getElementById('runs-list');
+  RUNS_DATA.forEach(function(d){rl.insertAdjacentHTML('beforeend',runRowHTML(d));});
+}
+function addLift(){document.getElementById('lifts-list').insertAdjacentHTML('beforeend',liftRowHTML({name:'',seats:4,t1:'09:00',t2:'16:00',open:true,adv:''}));}
+function addRun(){document.getElementById('runs-list').insertAdjacentHTML('beforeend',runRowHTML({name:'',diff:'blue',t1:'09:00',t2:'16:00',lift:getLiftNames()[0]||'',open:true,adv:''}));}
 
-TICKET PRICES:
-• Adult full day: $129
-• Child (6-12): $89
-• Senior (65+): $99
-• Half day (after 12pm): $89
-
-Rentals available at the Base Lodge Rental Shop. Reservations recommended on weekends.
-
-Shuttle runs every 15 minutes from Main Parking Lot to base area.
-First shuttle: 7:30am | Last shuttle: 6:00pm</textarea>
-    </div>
-  </div>
-
-  <script>
-    // Toggle label updates
-    document.querySelectorAll('.item-toggle .toggle input').forEach(toggle => {
-      toggle.addEventListener('change', function() {
-        const label = this.closest('.toggle-row').querySelector('.toggle-label');
-        label.textContent = this.checked ? 'Open' : 'Closed';
-      });
-    });
-
-    // Save button
-    document.querySelector('.save-btn').addEventListener('click', function() {
-      this.textContent = '✓ Saved!';
-      setTimeout(() => { this.textContent = 'SAVE'; }, 1500);
-    });
-  </script>
+function updateStatus(cb){
+  var r=cb.closest('.row-item')||cb.closest('.addon-top');
+  if(!r)return;
+  var s=r.querySelector('.st');
+  if(s){s.textContent=cb.checked?'Open':'Closed';s.className='st '+(cb.checked?'st-o':'st-c');}
+}
+function handleSave(){
+  var b=document.querySelector('.save-btn');
+  b.textContent='Saved ✓';b.style.background='#16a34a';
+  setTimeout(function(){b.textContent='Save Changes';b.style.background='';},2000);
+}
+function togglePicker(){
+  var p=document.getElementById('mod-picker');
+  p.style.display=p.style.display==='none'?'block':'none';
+}
+function addMod(type){
+  document.getElementById('mod-picker').style.display='none';
+  var titles={shop:'Shop',ski:'Ski School',fb:'Food & Beverage',guest:'Guest Services',webcam:'Webcams'};
+  var ph={shop:'Shop name (e.g. Rental Shop)',ski:'Ski School',fb:'Outlet name (e.g. Summit Lodge)',guest:'Guest Services'};
+  var addLbl={shop:'+ Add Shop',ski:null,fb:'+ Add Outlet',guest:null};
+  var d=document.createElement('div');d.className='section';d.style.marginBottom='10px';
+  var h='<div class="section-top"><span class="section-title">'+titles[type]+'</span><button class="remove-btn" onclick="this.closest(\'.section\').remove()">Remove section</button></div><div class="section-pad">';
+  if(type==='webcam'){
+    h+='<div class="addon-card"><div class="addon-top"><input class="addon-name" placeholder="Webcam name (e.g. Summit Cam)"><label class="toggle"><input type="checkbox" checked><span class="slider"></span></label></div><div style="margin-top:8px"><div style="font-size:10px;color:#555;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px">URL</div><input style="width:100%;background:#1a1d27;border:1px solid #2a2d3a;border-radius:5px;padding:5px 9px;color:#60a5fa;font-size:12px" placeholder="https://..."></div><div style="font-size:11px;color:#444;margin-top:5px">Guests can text the Snow Phone to request webcam links.</div></div><button class="add-row-btn" style="margin-top:4px">+ Add Webcam</button>';
+  } else {
+    h+='<div class="addon-card"><div class="addon-top"><input class="addon-name" placeholder="'+ph[type]+'"><label class="toggle"><input type="checkbox" checked onchange="updateStatus(this)"><span class="slider"></span></label><span class="st st-o">Open</span></div><div class="addon-fields"><div class="hgrp" style="gap:4px"><input type="time" value="08:00"><span>–</span><input type="time" value="17:00"></div></div><div class="addon-adv"><input placeholder="Notes, pricing, services..."></div></div>';
+    if(addLbl[type])h+='<button class="add-row-btn" style="margin-top:4px">'+addLbl[type]+'</button>';
+  }
+  h+='</div>';
+  d.innerHTML=h;
+  document.getElementById('added-mods').appendChild(d);
+  d.scrollIntoView({behavior:'smooth',block:'start'});
+}
+initLists();
+</script>
 </body>
 </html>
